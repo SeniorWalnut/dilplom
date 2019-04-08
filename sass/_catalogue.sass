@@ -1,0 +1,29 @@
+.catalogue	
+	width: 1200px
+	position: relative
+	margin: 0 auto
+	font-size: 24px
+	&-wrapper
+		display: flex
+		padding: 0 25px
+	&-title
+		font-size: 32px
+		display: block
+		text-decoration: none
+		color: black
+		&:first-letter
+			color: $spanColor
+		text-shadow: $mainShadow
+		// position: absolute
+		padding: 25px
+		font-family: 'MrsSheppards-Regular'
+		border-bottom: 1px solid #e3e4e9
+	&-left,
+	&-right
+		flex-basis: 50%	
+	&-brand
+		font-family: 'Open-Sans'
+		text-transform: uppercase
+		font-weight: 700
+@media (max-width: 1200px)
+	width: 100%
