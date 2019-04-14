@@ -4,18 +4,25 @@
   "description": "",
   "main": "server.js",
   "scripts": {
-    "start": "parcel index.html"
+    "start": "parcel index.html",
+    "server": "nodemon server.js"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@babel/preset-react": "^7.0.0",
+    "axios": "^0.18.0",
     "express": "^4.16.4",
     "node-sass": "^4.11.0",
+    "pg-promise": "^8.6.4",
     "react": "^16.8.6",
     "react-dom": "^16.8.6",
     "react-router": "^5.0.0",
     "react-router-dom": "^5.0.0",
     "video-react": "^0.13.6"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.4.3"
   }
 }

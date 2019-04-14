@@ -6,7 +6,7 @@ import Catalogue from './Catalogue';
 const ROUTES = [
 	{route: 'skates', icon: '../assets/icons/skateboard.svg'},
 	{route: 'wheels', icon: '../assets/icons/car-wheel.svg'},
-	{route: 'skooters', icon: '../assets/icons/scooter.svg'}
+	{route: 'scooters', icon: '../assets/icons/scooter.svg'}
 ];
 
 class MainPage extends React.Component {

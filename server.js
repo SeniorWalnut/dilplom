@@ -1,16 +1,14 @@
 const express = require('express');
+const pgp = require('pg-promise')();
 
 const server = express();
-
+const db = pgp("postgres://diplom_maker:qwerty@localhost:5432/skate_shop");
 // server.use(express.static('pages'));
 
-server.get('/', (req, res) => {
-	res.send('Hello');
-});
+db.one('SELECT * FROM product');
 
 server.get('/skates', (req, res) => {
-	res.send('it\'s note');
+
 });
 
 server.listen(3000);
-console.log('server is running');
