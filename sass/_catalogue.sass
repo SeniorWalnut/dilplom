@@ -44,6 +44,10 @@
 	&-subtitle
 		font-family: 'Open-Sans'
 		font-weight: 700
+		&:nth-child(3)
+			border-top: 1px solid $primaryColor
+			margin-top: 40px
+			padding-top: 15px
 
 	&-right,
 	&-left
@@ -60,7 +64,7 @@
 			display: inline-block
 			vertical-align: middle
 		& label
-			// cursor: pointer
+			cursor: pointer
 			margin-top: 15px
 			position: relative
 			&:before
@@ -96,7 +100,6 @@
 			&:hover
 				transform: scale(1.1)
 				cursor: pointer
-				border: 1px solid $spanColor
 
 .search-field
 	&__name
@@ -109,5 +112,38 @@
 			outline: none
 			border: 1px solid #dfdfdf
 
+.sort-button
+	// border-top: 1px solid $primaryColor
+	margin-top: 25px
+	font-family: 'Open-Sans'
+	& > li 
+		padding: 10px 15px
+		padding-left: 0
+		margin-top: 5px
+		border: 1px solid transparent
+		transition: .4s
+		display: inline-block
+		vertical-align: middle
+		font-size: 18px
+		// padding-left: 35px
+		width: 100%
+		cursor: pointer
+		&::before
+			content: ""
+			display: inline-block
+			vertical-align: middle
+			width: 20px
+			height: 20px
+			background: url('../assets/icons/arrow-up.svg') no-repeat 10px center
+			background-size: 14px
+			padding-right: 10px
+			// padding-left: 5px
+			// background-position: 10px 15px
+
+		&:nth-child(2)
+			&::before
+				transform: rotate(180deg)
+		&:hover
+			border: 1px dashed $primaryColor
 @media (max-width: 1200px)
 	width: 100%
