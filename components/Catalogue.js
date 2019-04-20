@@ -2,8 +2,12 @@ import React from 'react';
 import axios from 'axios';
 import { withRouter } from "react-router-dom";
 import Item from './Item';
+import Cart from './Cart';
+import MainButton from './MainButton';
 
 import images from '../assets/skate-images/alien_workshop/*.jpg';
+
+const mainURL = 'http://localhost:3000/';
 // console.log(images);
 		// <h1>{window.location.pathname}</h1>
 class Catalogue extends React.Component {
@@ -15,78 +19,91 @@ class Catalogue extends React.Component {
 			onError: false,
 			fetchItems: [],
 			allItems: [],
-			typesOfProducts: []
-			// currentProducts: []
+			typesOfProducts: [],
+			params: {
+				'sort': [],
+				'filter': "",
+				'item_name': ""
+			},	
+			productsInCart:[]
 		};
 
 		// Main
 		this._pageType = window.location.pathname.slice(1);
 
 		// Methods
-		// this.clearItems = this.clearItems.bind(this);
-		this.handleSearch = this.handleSearch.bind(this);
 		this.handleCheckboxes = this.handleCheckboxes.bind(this);
-		// this.sortProducts = this.sortProducts.bind(this);
-		// this.handleBrand = this.handleBrand.bind(this);
+		this.handleSort = this.handleSort.bind(this);
+		this.addToCart = this.addToCart.bind(this);
+		this.handleQuery = this.handleQuery.bind(this);
 		// Temporary fields
 
 		// Some Types
 		this._typesOfSorts = [
-			'priceUp',
-			'priceDown',
-			'quantityUp',
-			'quantityDown'
+			'price_Up',
+			'price_Down',
+			'quantity_Up',
+			'quantity_Down'
 		];
 	}
 
+	handleQuery() {
+		axios.get(mainURL + this._pageType, {
+			params: this.state.params
+		})
+		.then(data => {
+			this.setState({fetchItems: data.data.data})
+		})
+		  .catch(err => {throw new Error(err)})
+
+	}
+
 	handleCheckboxes(ev) {
-		let type = this.state.typesOfProducts.find(i => ev.target.id === i.name);
-		type.checked = ev.target.checked;
+		let typesOfProducts = [...this.state.typesOfProducts],
+		cur = typesOfProducts.find(i => ev.target.id === i.name);
+		cur.checked = ev.target.checked;
 
-		this.handleSearch();
+		this.setState(prevState => ({
+			...prevState.typesOfProducts,
+			typesOfProducts
+		}));
+
+		let filters = this.state.typesOfProducts.filter(item => item.checked).map(i => i.name) + '';
+		this.setState(prevState => ({
+			params: {
+				...prevState.params,
+				'filter': filters
+			}
+		}));
+
+		this.handleQuery();
 	}
 
-	handleSearch(ev) {
-		var itemName =  ev ? ev.target.value.trim() : " ";
 
-		// this.setState({curItem: itemName})
-		let filtered;
-		let checked = this.state.typesOfProducts.map(pr =>{if (pr.checked) return pr.name}).filter(i => i !== undefined);
-		console.log(checked)
-		let checkboxed = checked.length ? this.state.fetchItems.filter(i => checked.includes(i.product_type)) : this.state.fetchItems;
+	handleSort(sortType) {
+		let sort = sortType.target.id.split('_');
+		this.setState(prevState => ({
+			params: {
+				...prevState.params,
+				'sort': sort
+			}
+		}));
 
-		if (itemName.length !== 0 && itemName !== ' ') {
-			var react = this;
-			
-			filtered = checkboxed
-				.filter((item) => { return (
-					item.name.toLowerCase().startsWith(itemName.toLowerCase()))
-			});
-
-			if (checked.length)
-				filtered = filtered.filter(item => checked.includes(item.product_type))
-		} else {
-			filtered = checkboxed;
-		}
-		
-		this.setState({ allItems: filtered })
+		this.handleQuery();
 	}
 
-	// sortProducts(type) {
-	// 	var types = {
-	// 		"priceUp": function(a, b) {return +a.price - +b.price},
-	// 		"priceDown": function(a, b) {return +b.price - +a.price},
-	// 		"quantityUp": function(a, b) { return +a.quantity - +b.quantity},
-	// 		"quantityDown": function(a, b) { return +b.quantity - +a.quantity}
-	// 	};
+	addToCart(item) {
+		this.setState(prevState => ({
+			productsInCart: [
+				...prevState.productsInCart,
+				item
+			]
+		}))
+	}
 
-	// 	let sorted = this.state.fetchItems.sort(item => { return types[type]; });
-	// 	this.setState({allItems: sorted})
-	// }
 
 	componentDidMount() {
-		axios
-			.get('http://localhost:3000/' + this._pageType)
+		axios.get('http://localhost:3000/' + this._pageType)
 			.then(data => { 
 				let checkboxes = [...new Set(data.data.data.map(item => item.product_type))].map(item => {
 					return {
@@ -95,8 +112,7 @@ class Catalogue extends React.Component {
 					}
 				});
 				this.setState({
-					fetchItems: data.data.data, 
-					allItems: data.data.data,
+					fetchItems: data.data.data,
 					typesOfProducts: checkboxes
 				})
 			})
@@ -107,12 +123,13 @@ class Catalogue extends React.Component {
 			})
 	}
 
+
 	render() {
 		return (
 			<div className="catalogue">
 				<div className="catalogue-header">
 					<a href="#" className="catalogue-title">JSk</a>
-					<a href="#" className="catalogue-basket"></a>
+					<Cart products={this.state.productsInCart}/>
 				</div>
 				<div className="catalogue-wrapper">
 					<div className="catalogue-left">
@@ -135,24 +152,24 @@ class Catalogue extends React.Component {
 						</h1>
 						<ul className="sort-button">
 							{this._typesOfSorts.map((type, ind) => {
-								return <li key={type + ind}>{type}</li>
+							 	return <li key={type + ind} id={type} onClick={this.handleSort}>{type}</li>
 							})}
 						</ul>
 					</div>	
 					<div className="catalogue-right">
 						<div className="catalogue-right__top">
 							<div className="skate-quantity">
-								Количество Товара: {this.state.allItems.length}
+								Количество Товара: {this.state.fetchItems.length}
 							</div>
 							<label className="search-field" >
 								<div className="search-field__name">Введите название товара:</div>
-								<input type="text" id="search" onChange={this.handleSearch}/>
+								<input type="text" id="search" />
 							</label>
 						</div>
 						<ul className="catalogue-items">{
-								this.state.allItems.map((item, ind) => {
+								this.state.fetchItems.map((item, ind) => {
 									return (
-									<li key={item.name.slice(1, 5) + ind}>
+									<li onClick={() => this.addToCart(item)} key={item.name.slice(1, 5) + ind}>
 										<Item
 											src={item.img}
 											title={item.name}

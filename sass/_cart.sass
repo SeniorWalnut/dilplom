@@ -1,0 +1,32 @@
+.cart
+	position: relative
+	&__icon
+		padding: 20px
+		background: url('../assets/icons/cart.svg') no-repeat center
+		background-size: 25px 25px
+		cursor: pointer
+		&:hover
+			& + .cart__list
+				display: block
+	&-list
+		display: block
+		position: absolute
+		right: 0
+		width: 300px
+		background: white
+		border-radius: 2px
+		box-shadow: $mainShadow
+		padding: 15px 
+		z-index: 15
+		&__nothing
+			font-size: 20px
+		&__wrapper
+			max-height: 190px
+			overflow-y: scroll
+	&-buttons
+		margin-top: 20px
+		display: flex
+		justify-content: flex-end
+		& > *
+			&:last-child
+				margin-left: 15px
