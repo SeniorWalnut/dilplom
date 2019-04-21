@@ -11,12 +11,11 @@ const CartProduct = (props) => {
 			</div>
 			<div className="cart-product__right">
 				<div className="cart-product__name">{item.name}</div>
-				<div className="cart-product__desc">{item.desc}</div>
-				<div className="card-product__price">{item.price}</div>
+				<div className="cart-product__desc">{item.description}</div>
+				<div className="cart-product__price">{item.price}</div>
 			</div>
-			<MainButton mod="cancel">
-				Отмена
-			</MainButton>
+			
+			<MainButton mod="cancel" onClick={props.removeItem}></MainButton>
 		</div>
 	);
 };

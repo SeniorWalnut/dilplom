@@ -24,9 +24,12 @@
 			-moz-box-shadow:    inset 1px 1px 5px $primaryColor
 			box-shadow:         inset 1px 1px 5px $primaryColor
 	&_cancel
-		background-color: #D80000 
+		background-color: transparent 
+		background: url('../assets/icons/cancel.svg') no-repeat center
+		background-size: contain
+		&:not(&:acitve)
 		&:active
-			-webkit-box-shadow: inset 1px 1px 5px #780000  
-			-moz-box-shadow:    inset 1px 1px 5px #780000  
-			box-shadow:         inset 1px 1px 5px #780000  
+			-webkit-box-shadow: none
+			-moz-box-shadow:    none
+			box-shadow:         none
 

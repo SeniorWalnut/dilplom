@@ -9,13 +9,23 @@ const db = pgp("postgres://diplom_maker:qwerty@localhost:5432/skate_shop");
 server.use(cors())
 server.use(bParser.json());
 
-function _getEverything(res) {
-	_getItems('SELECT * FROM product', res);
+// SETTINGS
+const LIMIT = 20;
+
+// function _getEverything(res) {
+// 	_getItems('SELECT * FROM product', res);
+// }
+
+
+function _getWholeQuantity() {
+	return db.any('SELECT COUNT(*) FROM product')
+		.then(data => data)
+		.catch(err => {throw new Error(err)});
 }
 
 function _getItems(req, res) {
-	db.any(req)
-		.then(data => res.status(200).json({'data': data}))
+	return db.any(req)
+		.then(data => data)
 		.catch(err => {throw new Error(err)});
 }
 
@@ -51,7 +61,17 @@ server.get('/skates',(req, res) => {
 	if (req.query.sort)
 		reqToDb += _sortItems(req.query.sort);
 
-	_getItems('SELECT * FROM product' + reqToDb, res);
+	let curPage = req.query.cur_page;
+
+	console.log(curPage)
+	Promise.all([
+		_getWholeQuantity(),
+		_getItems(`SELECT * FROM product ${reqToDb} LIMIT ${curPage * LIMIT} ${curPage === 1 ? `OFFSET ${LIMIT}` : ''}`)
+	]).then(data => {
+		res.status(200).json({
+			data: data
+		})
+	});
 });
 // server.get('/skates')
 

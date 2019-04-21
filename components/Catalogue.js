@@ -23,10 +23,19 @@ class Catalogue extends React.Component {
 			params: {
 				'sort': [],
 				'filter': "",
-				'item_name': ""
+				'item_name': "",
+				'cur_page': 1
 			},	
-			productsInCart:[]
+			productsInCart:[],
+			fullPrice: 0,
+			showBuyMessage: false,
+			pageQuantity: 0,
+			page: {
+				activeInd: 1,
+				pagesNum: 1
+			}
 		};
+
 
 		// Main
 		this._pageType = window.location.pathname.slice(1);
@@ -36,7 +45,10 @@ class Catalogue extends React.Component {
 		this.handleSort = this.handleSort.bind(this);
 		this.addToCart = this.addToCart.bind(this);
 		this.handleQuery = this.handleQuery.bind(this);
-		// Temporary fields
+		this.clearAll = this.clearAll.bind(this);
+		this.removeItem = this.removeItem.bind(this);
+		this.buyAll = this.buyAll.bind(this);
+		this.closeMessage = this.closeMessage.bind(this);
 
 		// Some Types
 		this._typesOfSorts = [
@@ -52,9 +64,12 @@ class Catalogue extends React.Component {
 			params: this.state.params
 		})
 		.then(data => {
-			this.setState({fetchItems: data.data.data})
-		})
-		  .catch(err => {throw new Error(err)})
+			console.log(data)
+			this.setState({
+				fetchItems: data.data.data[1],
+				pageQuantity: data.data.data[0][0].count
+		})})
+		.catch(err => {throw new Error(err)})
 
 	}
 
@@ -103,24 +118,46 @@ class Catalogue extends React.Component {
 
 
 	componentDidMount() {
-		axios.get('http://localhost:3000/' + this._pageType)
-			.then(data => { 
-				let checkboxes = [...new Set(data.data.data.map(item => item.product_type))].map(item => {
-					return {
-						name: item,
-						checked: false
-					}
-				});
-				this.setState({
-					fetchItems: data.data.data,
-					typesOfProducts: checkboxes
-				})
+		this.handleQuery()
+		console.log()
+	}
+
+	clearAll() {
+		this.setState({
+			productsInCart: []
+		})
+	}
+
+	buyAll() {
+		if (this.state.productsInCart.length) {
+			let price = this.state.productsInCart.reduce((sum, cur) => {
+				return sum + parseFloat(cur.price.slice(1, ));
+			}, 0)
+
+
+			this.setState({
+				fullPrice: price,
+				showBuyMessage: true,
+				productsInCart: []
 			})
-			.catch(err => {
-				this.setState({
-					onError: true
-				})
-			})
+
+		}
+	}
+
+	removeItem(ind) {
+		let newProds = [
+			...this.state.productsInCart.slice(0, ind), 
+			...this.state.productsInCart.slice(ind + 1, )
+		];
+		this.setState({
+			productsInCart: newProds
+		})
+	}
+
+	closeMessage() {
+		this.setState({
+			showBuyMessage: false
+		})
 	}
 
 
@@ -129,7 +166,11 @@ class Catalogue extends React.Component {
 			<div className="catalogue">
 				<div className="catalogue-header">
 					<a href="#" className="catalogue-title">JSk</a>
-					<Cart products={this.state.productsInCart}/>
+					<Cart 
+						products={this.state.productsInCart}
+						clearAll={this.clearAll}
+						removeItem={this.removeItem}
+						buyAll={this.buyAll}/>
 				</div>
 				<div className="catalogue-wrapper">
 					<div className="catalogue-left">
@@ -159,7 +200,7 @@ class Catalogue extends React.Component {
 					<div className="catalogue-right">
 						<div className="catalogue-right__top">
 							<div className="skate-quantity">
-								Количество Товара: {this.state.fetchItems.length}
+								Количество Товара: {this.state.pageQuantity}
 							</div>
 							<label className="search-field" >
 								<div className="search-field__name">Введите название товара:</div>
@@ -180,8 +221,16 @@ class Catalogue extends React.Component {
 								})
 							}
 						</ul>
+						<ul className="main-pagination">
+							<li className="main-pagination__page-num_active"></li>
+						</ul>
 					</div>
 				</div>
+				{this.state.showBuyMessage && <div className="buy-message">
+					<p>Ваш заказ на сумму: <b>{this.state.fullPrice}$</b></p>
+					<p>Наш агент свяжется с вами</p>
+					<MainButton onClick={this.closeMessage}>Закрыть</MainButton>
+				</div>}
 			</div>
 		);
 	}

@@ -21,8 +21,15 @@
 		&__nothing
 			font-size: 20px
 		&__wrapper
-			max-height: 190px
+			max-height: 170px
 			overflow-y: scroll
+			margin-right: -20px
+			&-outter
+				overflow: hidden
+		&__item
+			margin-top: 20px
+			&:first-child
+				margin-top: 0
 	&-buttons
 		margin-top: 20px
 		display: flex
@@ -30,3 +37,16 @@
 		& > *
 			&:last-child
 				margin-left: 15px
+	// PRODUCT
+	&-product
+		display: flex
+		align-items: center
+		&__left
+			margin-right: 25px
+		&__right
+			font-size: 12px
+		&__desc
+			padding-top: 5px
+		&__price
+			padding-top: 5px
+			font-weight: bold

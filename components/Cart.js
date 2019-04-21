@@ -5,11 +5,14 @@ import MainButton from './MainButton';
 class Cart extends React.Component {
 	constructor(props) {
 		super(props);
-		this.state = {
-			showCart: false
-		};
+	this.state = {
+		showCart: false
+	};
+
+		this.products = this.props.products;
 
 		this.handleCart = this.handleCart.bind(this);
+		// this.clearAll = this.clearAll.bind(this);
 	}
 
 	handleCart() {
@@ -24,19 +27,28 @@ class Cart extends React.Component {
 			<div className="cart">
 				<div className="cart__icon" onClick={this.handleCart}></div>
 				{this.state.showCart && <div className="cart-list" >
-					<ul className="cart-list__wrapper">{products ? products.map((item, ind) => {
-							return (
-								<li key={item + ind} className="cart-list__item">
-									<CartProduct obj={item}/>
-								</li>
-							);
-						})
-					: <li className="cart-list__nothing">Здесь пока ничего нет :С</li>}
-					</ul>
+					{products.length ? 
+					<div className="cart-list__wrapper-outter">
+						<ul className="cart-list__wrapper">{products.map((item, ind) => {
+								return (
+									<li key={item + ind} className="cart-list__item">
+										<CartProduct 
+											obj={item}
+											removeItem={() => {
+												console.log('child')
+												console.log(ind)
+												this.props.removeItem(ind)}
+											}/>
+									</li>
+								);
+							})
+						}</ul>
+					</div>
+					: <div className="cart-list__nothing">Здесь пока ничего нет :С</div>}
 					<div className="cart__full-price"></div>	
 					<div className="cart-buttons">
-						<MainButton mod="buy">Купить</MainButton>
-						<MainButton mod="clear-all">Убрать всё</MainButton>
+						<MainButton mod="buy" onClick={this.props.buyAll}>Купить</MainButton>
+						<MainButton mod="clear-all" onClick={this.props.clearAll}>Убрать всё</MainButton>
 					</div>
 				</div>}
 			</div>
