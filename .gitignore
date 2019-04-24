@@ -3,5 +3,3 @@ package-lock.json
 .cache/
 dist/
 assets/
-result/
-insert_data.js

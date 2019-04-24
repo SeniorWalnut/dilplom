@@ -4,10 +4,15 @@ import { withRouter } from "react-router-dom";
 import Item from './Item';
 import Cart from './Cart';
 import MainButton from './MainButton';
+import Pagination from './Pagination';
 
-import images from '../assets/skate-images/alien_workshop/*.jpg';
+import images from '../assets/skate-images/*.jpg';
+
+console.log(images)
 
 const mainURL = 'http://localhost:3000/';
+
+const LIMIT = 20;
 // console.log(images);
 		// <h1>{window.location.pathname}</h1>
 class Catalogue extends React.Component {
@@ -29,20 +34,19 @@ class Catalogue extends React.Component {
 			productsInCart:[],
 			fullPrice: 0,
 			showBuyMessage: false,
-			pageQuantity: 0,
+			itemsQuantity: 0,
 			page: {
 				activeInd: 1,
 				pagesNum: 1
 			}
 		};
 
-
 		// Main
 		this._pageType = window.location.pathname.slice(1);
-
 		// Methods
 		this.handleCheckboxes = this.handleCheckboxes.bind(this);
 		this.handleSort = this.handleSort.bind(this);
+		this.handlePage = this.handlePage.bind(this);
 		this.addToCart = this.addToCart.bind(this);
 		this.handleQuery = this.handleQuery.bind(this);
 		this.clearAll = this.clearAll.bind(this);
@@ -64,11 +68,11 @@ class Catalogue extends React.Component {
 			params: this.state.params
 		})
 		.then(data => {
-			console.log(data)
 			this.setState({
 				fetchItems: data.data.data[1],
-				pageQuantity: data.data.data[0][0].count
-		})})
+				itemsQuantity: +data.data.data[0][0].count
+			}) 
+		})
 		.catch(err => {throw new Error(err)})
 
 	}
@@ -119,7 +123,12 @@ class Catalogue extends React.Component {
 
 	componentDidMount() {
 		this.handleQuery()
-		console.log()
+
+		let types =  this.state.fetchItems.map(item => item['product_type'])
+
+		this.setState({
+			typesOfProducts: types
+		})
 	}
 
 	clearAll() {
@@ -158,6 +167,18 @@ class Catalogue extends React.Component {
 		this.setState({
 			showBuyMessage: false
 		})
+	}
+
+	handlePage(val) {
+		console.log(val)
+		this.setState(prevState => ({
+			params: {
+				...prevState.params,
+				'cur_page': val
+			}
+		} 
+		))
+		this.handleQuery();
 	}
 
 
@@ -200,7 +221,7 @@ class Catalogue extends React.Component {
 					<div className="catalogue-right">
 						<div className="catalogue-right__top">
 							<div className="skate-quantity">
-								Количество Товара: {this.state.pageQuantity}
+								Количество Товара: {this.state.itemsQuantity}
 							</div>
 							<label className="search-field" >
 								<div className="search-field__name">Введите название товара:</div>
@@ -212,7 +233,7 @@ class Catalogue extends React.Component {
 									return (
 									<li onClick={() => this.addToCart(item)} key={item.name.slice(1, 5) + ind}>
 										<Item
-											src={item.img}
+											src={images[item.img.split('/')[3]]}
 											title={item.name}
 											price={item.price}
 											info={item.description}	
@@ -221,9 +242,10 @@ class Catalogue extends React.Component {
 								})
 							}
 						</ul>
-						<ul className="main-pagination">
-							<li className="main-pagination__page-num_active"></li>
-						</ul>
+						<Pagination 
+							pages={Math.ceil(this.state.itemsQuantity / LIMIT)}
+							fetchPage={this.handlePage}
+						/>
 					</div>
 				</div>
 				{this.state.showBuyMessage && <div className="buy-message">

@@ -3,11 +3,19 @@ const bParser = require('body-parser');
 var cors = require('cors');
 const pgp = require('pg-promise')();
 
+
 const server = express();
 const db = pgp("postgres://diplom_maker:qwerty@localhost:5432/skate_shop");
 
-server.use(cors())
+// server.use(cors({
+// 	maxAge: 600
+// }));
 server.use(bParser.json());
+server.use(function(req, res, next) {
+	res.header('Access-Control-Allow-Origin', '*');
+	res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+  	next();
+});
 
 // SETTINGS
 const LIMIT = 20;
@@ -44,7 +52,7 @@ function _filterItems(filterTypes) {
 }
 
 function _sortItems(sort) {
-	return " ORDER BY " + sort[0] + (sort[1] === 'Down' ? ' desc' : ''); 
+	return " ORDER BY " + sort[0] + (sort[1] === 'Down' ? ' DESC' : ''); 
 }
 
 // function _findElem(elem) {
@@ -63,10 +71,12 @@ server.get('/skates',(req, res) => {
 
 	let curPage = req.query.cur_page;
 
-	console.log(curPage)
+
+	console.log(`SELECT * FROM product ${reqToDb} LIMIT ${LIMIT} OFFSET ${(curPage - 1)* LIMIT}`)
+
 	Promise.all([
 		_getWholeQuantity(),
-		_getItems(`SELECT * FROM product ${reqToDb} LIMIT ${curPage * LIMIT} ${curPage === 1 ? `OFFSET ${LIMIT}` : ''}`)
+		_getItems(`SELECT * FROM product ${reqToDb} LIMIT ${LIMIT} OFFSET ${(curPage - 1)* LIMIT}`)
 	]).then(data => {
 		res.status(200).json({
 			data: data

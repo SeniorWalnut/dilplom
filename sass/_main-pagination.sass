@@ -1,0 +1,26 @@
+.main-pagination
+	margin-top: 25px
+	display: flex
+	align-items: center
+	justify-content: center
+	font-size: 20px
+	&__page
+		color: $primaryColor
+		padding: 5px 10px
+		text-align: center
+		// border: 1px solid #333
+		font-family: 'Montserrat'
+		cursor: pointer
+		box-shadow: $mainShadow
+		&:nth-child(n+1)
+			border-right: 0
+		&:first-child
+			border-top-left-radius: 5px
+			border-bottom-left-radius: 5px
+		&:last-child
+			border-top-right-radius: 5px
+			border-bottom-right-radius: 5px
+		&:active
+			-webkit-box-shadow: inset 1px 1px 4px #707070
+			-moz-box-shadow:    inset 1px 1px 4px #707070
+			box-shadow:         inset 1px 1px 4px #707070
