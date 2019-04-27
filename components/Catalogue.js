@@ -8,7 +8,6 @@ import Pagination from './Pagination';
 
 import images from '../assets/skate-images/*.jpg';
 
-console.log(images)
 
 const mainURL = 'http://localhost:3000/';
 
@@ -53,6 +52,7 @@ class Catalogue extends React.Component {
 		this.removeItem = this.removeItem.bind(this);
 		this.buyAll = this.buyAll.bind(this);
 		this.closeMessage = this.closeMessage.bind(this);
+		this.changeParams = this.changeParams.bind(this);
 
 		// Some Types
 		this._typesOfSorts = [
@@ -64,50 +64,38 @@ class Catalogue extends React.Component {
 	}
 
 	handleQuery() {
-		axios.get(mainURL + this._pageType, {
+		return axios.get(mainURL + this._pageType, {
 			params: this.state.params
 		})
 		.then(data => {
+			console.log(data)
 			this.setState({
 				fetchItems: data.data.data[1],
 				itemsQuantity: +data.data.data[0][0].count
 			}) 
 		})
 		.catch(err => {throw new Error(err)})
-
 	}
 
 	handleCheckboxes(ev) {
-		let typesOfProducts = [...this.state.typesOfProducts],
-		cur = typesOfProducts.find(i => ev.target.id === i.name);
+		let newTypesOfProducts = [...this.state.typesOfProducts],
+		cur = newTypesOfProducts.find(i => ev.target.id === i.name);
 		cur.checked = ev.target.checked;
-
-		this.setState(prevState => ({
-			...prevState.typesOfProducts,
-			typesOfProducts
-		}));
+ 
+		this.setState({
+			typesOfProducts: newTypesOfProducts
+		});
 
 		let filters = this.state.typesOfProducts.filter(item => item.checked).map(i => i.name) + '';
-		this.setState(prevState => ({
-			params: {
-				...prevState.params,
-				'filter': filters
-			}
-		}));
-
+		this.changeParams('filter', filters)
 		this.handleQuery();
 	}
 
 
 	handleSort(sortType) {
 		let sort = sortType.target.id.split('_');
-		this.setState(prevState => ({
-			params: {
-				...prevState.params,
-				'sort': sort
-			}
-		}));
 
+		this.changeParams('sort', sort);
 		this.handleQuery();
 	}
 
@@ -122,12 +110,14 @@ class Catalogue extends React.Component {
 
 
 	componentDidMount() {
-		this.handleQuery()
+		this.handleQuery().then(() => {
+			let getTypes = [... new Set(this.state.fetchItems
+				.map(item => item['product_type']))]
+				.map(item =>{ return {name: item, checked: false} });
 
-		let types =  this.state.fetchItems.map(item => item['product_type'])
-
-		this.setState({
-			typesOfProducts: types
+			this.setState({
+				typesOfProducts: getTypes
+			})
 		})
 	}
 
@@ -170,15 +160,22 @@ class Catalogue extends React.Component {
 	}
 
 	handlePage(val) {
-		console.log(val)
-		this.setState(prevState => ({
-			params: {
-				...prevState.params,
-				'cur_page': val
-			}
-		} 
-		))
+		this.changeParams('cur_page', val);
 		this.handleQuery();
+	}
+
+	handleFinding(val) {
+		console.log(val)
+		this.changeParams('item_name', val);
+		this.handleQuery();
+	}
+
+
+	changeParams(key, newVal) {
+		let newParams = Object.assign(this.state.params, {[key]: newVal});
+		this.setState({
+			params: newParams
+		});
 	}
 
 
@@ -188,7 +185,7 @@ class Catalogue extends React.Component {
 				<div className="catalogue-header">
 					<a href="#" className="catalogue-title">JSk</a>
 					<Cart 
-						products={this.state.productsInCart}
+						products={[...new Set(this.state.productsInCart)]}
 						clearAll={this.clearAll}
 						removeItem={this.removeItem}
 						buyAll={this.buyAll}/>
@@ -225,13 +222,13 @@ class Catalogue extends React.Component {
 							</div>
 							<label className="search-field" >
 								<div className="search-field__name">Введите название товара:</div>
-								<input type="text" id="search" />
+								<input type="text" id="search" onChange={(e) => this.handleFinding(e.target.value)}/>
 							</label>
 						</div>
 						<ul className="catalogue-items">{
 								this.state.fetchItems.map((item, ind) => {
 									return (
-									<li onClick={() => this.addToCart(item)} key={item.name.slice(1, 5) + ind}>
+									<li onClick={() => this.addToCart(item)} key={item.name + ind}>
 										<Item
 											src={images[item.img.split('/')[3]]}
 											title={item.name}
