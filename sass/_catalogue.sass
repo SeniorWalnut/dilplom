@@ -13,14 +13,14 @@
 		justify-content: space-between
 		border-bottom: 1px solid #e3e4e9
 		// padding: 0 25px
-	    // width: 100vw
-    	// height: 100vh
-    &-basket
-    	display: block
-    	cursor: pointer
-    	padding: 25px
-    	background-image: url('../assets/icons/basket.svg')
-    	background-size: contain
+		// width: 100vw
+		// height: 100vh
+	&-basket
+		display: block
+		cursor: pointer
+		padding: 25px
+		background-image: url('../assets/icons/cart.svg')
+		background-size: contain
 	&-title
 		font-size: 32px
 		display: block
@@ -61,8 +61,9 @@
 		font-weight: 500
 		margin-top: 15px
 		& > li
-			display: inline-block
-			vertical-align: middle
+		    display: flex
+    		align-items: center
+    		font-size: 18px
 		& label
 			cursor: pointer
 			margin-top: 15px
@@ -79,7 +80,7 @@
 				// display: block
 				// display: none 
 				padding: 4px
-				top: 13px
+				top: 5px
 				left: 4px
 				// transform: translate(-50%, -50%)
 				background-color: transparent
@@ -147,12 +148,21 @@
 			border: 1px dashed $primaryColor
 .buy-message
 	position: fixed
-	top: 50%
-	left: 50%
-	transform: translate(-50%, -50%)
-	padding: 25px
-	color: $primaryColor
-	background: white
-	box-shadow: $mainShadow
+	display: block
+	top: 0
+	height: 100%
+	width: 100%
+	left: 0
+	z-index: 15
+	background-color: rgba(0, 0, 0, .56)
+	&__inner
+		position: fixed
+		top: 50%
+		left: 50%
+		transform: translate(-50%, -50%)
+		padding: 25px
+		color: $primaryColor
+		background: white
+		box-shadow: $mainShadow
 @media (max-width: 1200px)
 	width: 100%

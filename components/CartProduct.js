@@ -1,7 +1,9 @@
 import React from 'react';
 import MainButton from './MainButton';
 
-import images from '../assets/skate-images/*.jpg';
+import images from '../assets/skate-images/**/*.jpg';
+
+const pageImages = images[Object.keys(images).find(i => i === window.location.pathname.slice(1))];
 
 const CartProduct = (props) => {
 	let item = props.obj;
@@ -9,7 +11,7 @@ const CartProduct = (props) => {
 
 		<div className="cart-product">
 			<div className="cart-product__left">
-				<img src={images[item.img.split('/')[3]]} className="cart-product__pic" />
+				<img src={pageImages[item.img.split('/')[4]]} className="cart-product__pic" />
 			</div>
 			<div className="cart-product__right">
 				<div className="cart-product__name">{item.name}</div>

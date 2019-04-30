@@ -17,11 +17,11 @@ const LIMIT = 20;
 
 
 
-function _getQuantity(query) {
-	return db.any(`SELECT COUNT(*) FROM product ${query ? `WHERE ${query}` : ''}`)
-		.then(data => data)
-		.catch(err => {throw new Error(err)});
-}
+// function _getQuantity(query) {
+// 	return db.any(query)
+// 		.then(data => data)
+// 		.catch(err => {throw new Error(err)});
+// }
 
 function _getItems(req, res) {
 	return db.any(req)
@@ -30,15 +30,15 @@ function _getItems(req, res) {
 }
 
 function _filterItems(filterTypes) {
-	let req = " ";
+	let req = '(';
 
 	let types = filterTypes.split(',');
 
 	types.forEach((item, ind) => {
 		req += (ind > 0 ? ' OR ' : '') + `product_type = '${item}'`;
 	})
-	console.log(req)
-	return req;
+
+	return req + ')';
 }
 
 function _sortItems(sort) {
@@ -46,28 +46,32 @@ function _sortItems(sort) {
 }
 
 function _findItem(item) {
-	return (item.length ? ` name LIKE '${item}%'` : '');
+	return (item.length ? ` name SIMILAR TO '${item}%'` : '');
 }
 
 
 // REQUESTS
-server.get('/skates', (req, res) => {
+server.get('/decks|wheels', (req, res) => {
 
-	let reqToDb = 'WHERE';
+	let pageType = `WHERE page_type = '${req.path.slice(1)}'`;
+
+	let reqToDb = `${pageType} ${req.query.filter || req.query.item_name? 'AND' : ''}`;
+
 	if (req.query.filter)
-		reqToDb += _filterItems(req.query.filter);
-	if (req.query.item_name)
+		reqToDb += _filterItems(req.query.filter) + (req.query.item_name ? ' AND ' : '');
+	if (req.query.item_name) 
 		reqToDb += _findItem(req.query.item_name);
 	if (req.query.sort)
 		reqToDb += _sortItems(req.query.sort);
 
 	let curPage = req.query.cur_page;
 
-	console.log(`SELECT * FROM product ${reqToDb === 'WHERE' ? '' : reqToDb} LIMIT ${LIMIT} OFFSET ${(curPage - 1)* LIMIT}`)
+	console.log(`SELECT * FROM product ${reqToDb} LIMIT ${LIMIT} OFFSET ${(curPage - 1) * LIMIT}`)
 
 	Promise.all([
-		_getQuantity(),
-		_getItems(`SELECT * FROM product ${reqToDb === 'WHERE' ? '' : reqToDb} LIMIT ${LIMIT} OFFSET ${(curPage - 1)* LIMIT}`)
+		_getItems(`SELECT COUNT(*) FROM product ${reqToDb}`),
+		_getItems(`SELECT * FROM product ${reqToDb} LIMIT ${LIMIT} OFFSET ${(curPage - 1) * LIMIT}`),
+		_getItems(`SELECT DISTINCT product_type FROM product ${pageType}`)
 	]).then(data => {
 		res.send({
 			data: data

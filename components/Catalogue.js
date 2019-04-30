@@ -6,13 +6,14 @@ import Cart from './Cart';
 import MainButton from './MainButton';
 import Pagination from './Pagination';
 
-import images from '../assets/skate-images/*.jpg';
+import images from '../assets/skate-images/**/*.jpg';
 
+const pageImages = images[Object.keys(images).find(i => i === window.location.pathname.slice(1))];
 
 const mainURL = 'http://localhost:3000/';
 
 const LIMIT = 20;
-// console.log(images);
+console.log(pageImages);
 		// <h1>{window.location.pathname}</h1>
 class Catalogue extends React.Component {
 	constructor(props) {
@@ -71,7 +72,8 @@ class Catalogue extends React.Component {
 			console.log(data)
 			this.setState({
 				fetchItems: data.data.data[1],
-				itemsQuantity: +data.data.data[0][0].count
+				itemsQuantity: +data.data.data[0][0].count,
+				typesOfProducts: data.data.data[2].map(i => { return {name: i['product_type'], checked: false}})
 			}) 
 		})
 		.catch(err => {throw new Error(err)})
@@ -110,15 +112,7 @@ class Catalogue extends React.Component {
 
 
 	componentDidMount() {
-		this.handleQuery().then(() => {
-			let getTypes = [... new Set(this.state.fetchItems
-				.map(item => item['product_type']))]
-				.map(item =>{ return {name: item, checked: false} });
-
-			this.setState({
-				typesOfProducts: getTypes
-			})
-		})
+		this.handleQuery()
 	}
 
 	clearAll() {
@@ -165,7 +159,6 @@ class Catalogue extends React.Component {
 	}
 
 	handleFinding(val) {
-		console.log(val)
 		this.changeParams('item_name', val);
 		this.handleQuery();
 	}
@@ -230,7 +223,7 @@ class Catalogue extends React.Component {
 									return (
 									<li onClick={() => this.addToCart(item)} key={item.name + ind}>
 										<Item
-											src={images[item.img.split('/')[3]]}
+											src={pageImages[item.img.split('/')[4]]}
 											title={item.name}
 											price={item.price}
 											info={item.description}	
@@ -245,11 +238,14 @@ class Catalogue extends React.Component {
 						/>
 					</div>
 				</div>
-				{this.state.showBuyMessage && <div className="buy-message">
-					<p>Ваш заказ на сумму: <b>{this.state.fullPrice}$</b></p>
-					<p>Наш агент свяжется с вами</p>
-					<MainButton onClick={this.closeMessage}>Закрыть</MainButton>
-				</div>}
+				{this.state.showBuyMessage && 
+					<div className="buy-message">
+						<div className="buy-message__inner">
+							<p>Ваш заказ на сумму: <b>{this.state.fullPrice}$</b></p>
+							<p>Наш агент свяжется с вами</p>
+							<MainButton onClick={this.closeMessage}>Закрыть</MainButton>
+						</div>
+					</div>}
 			</div>
 		);
 	}
