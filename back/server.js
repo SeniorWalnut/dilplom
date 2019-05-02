@@ -42,7 +42,7 @@ function _filterItems(filterTypes) {
 }
 
 function _sortItems(sort) {
-	return " ORDER BY " + sort[0] + (sort[1] === 'Down' ? ' DESC' : ''); 
+	return `ORDER BY ${sort[0]}` + (sort[1] === 'Down' ? ' DESC' : ''); 
 }
 
 function _findItem(item) {
@@ -55,7 +55,7 @@ server.get('/decks|wheels', (req, res) => {
 
 	let pageType = `WHERE page_type = '${req.path.slice(1)}'`;
 
-	let reqToDb = `${pageType} ${req.query.filter || req.query.item_name? 'AND' : ''}`;
+	let reqToDb = `${pageType} ${req.query.filter || req.query.item_name ? 'AND' : ''}`;
 
 	if (req.query.filter)
 		reqToDb += _filterItems(req.query.filter) + (req.query.item_name ? ' AND ' : '');
@@ -69,8 +69,8 @@ server.get('/decks|wheels', (req, res) => {
 	console.log(`SELECT * FROM product ${reqToDb} LIMIT ${LIMIT} OFFSET ${(curPage - 1) * LIMIT}`)
 
 	Promise.all([
-		_getItems(`SELECT COUNT(*) FROM product ${reqToDb}`),
 		_getItems(`SELECT * FROM product ${reqToDb} LIMIT ${LIMIT} OFFSET ${(curPage - 1) * LIMIT}`),
+		_getItems(`SELECT COUNT(*) FROM product ${pageType}`),
 		_getItems(`SELECT DISTINCT product_type FROM product ${pageType}`)
 	]).then(data => {
 		res.send({

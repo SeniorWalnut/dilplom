@@ -21,7 +21,7 @@ pages.forEach(name => {
 		if (obj.length) {
 			let template = `INSERT INTO product(name, description, price, quantity, img, product_type, page_type) VALUES `;
 			obj.forEach(item => {
-				template += `('${item.name}', '${item.sub}', '${item.price}', ${item.quantity}, '${item.img}', '${item.product_type}', '${name.toLowerCase()}'), `;
+				template += `('${item.name}', '${item.sub}', ${item.price}, ${item.quantity}, '${item.img}', '${item.product_type}', '${name.toLowerCase()}'), `;
 			})
 
 			template = template.slice(0, template.length - 2) + ';';
