@@ -16,13 +16,6 @@ server.use((req, res, next) => {
 const LIMIT = 20;
 
 
-
-// function _getQuantity(query) {
-// 	return db.any(query)
-// 		.then(data => data)
-// 		.catch(err => {throw new Error(err)});
-// }
-
 function _getItems(req, res) {
 	return db.any(req)
 		.then(data => data)
@@ -70,7 +63,7 @@ server.get('/decks|wheels', (req, res) => {
 
 	Promise.all([
 		_getItems(`SELECT * FROM product ${reqToDb} LIMIT ${LIMIT} OFFSET ${(curPage - 1) * LIMIT}`),
-		_getItems(`SELECT COUNT(*) FROM product ${pageType}`),
+		_getItems(`SELECT COUNT(*) FROM product ${reqToDb}`),
 		_getItems(`SELECT DISTINCT product_type FROM product ${pageType}`)
 	]).then(data => {
 		res.send({
@@ -78,7 +71,6 @@ server.get('/decks|wheels', (req, res) => {
 		})
 	});
 });
-// server.get('/skates')
 
 
 server.listen(3000);

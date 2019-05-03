@@ -4,9 +4,8 @@ import { withRouter, Switch, BrowserRouter as Router, Route, Link } from "react-
 import Catalogue from './Catalogue';
 
 const ROUTES = [
-	{route: 'skates', icon: '../assets/icons/skateboard.svg'},
-	{route: 'wheels', icon: '../assets/icons/car-wheel.svg'},
-	{route: 'scooters', icon: '../assets/icons/scooter.svg'}
+	{route: 'decks', icon: '../assets/icons/skateboard.svg'},
+	{route: 'wheels', icon: '../assets/icons/car-wheel.svg'}
 ];
 
 class MainPage extends React.Component {
@@ -31,9 +30,8 @@ class MainPage extends React.Component {
 					</main>
 
 				<Router>
-					<Route path="/skates" component={Catalogue}/>
+					<Route path="/decks" component={Catalogue}/>
 					<Route path="/wheels" component={Catalogue}/>
-					<Route path="/skooters" component={Catalogue}/>
 				</Router>
 			</div>
 		);

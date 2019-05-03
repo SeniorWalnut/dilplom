@@ -10,6 +10,7 @@ import images from '../assets/skate-images/**/*.jpg';
 
 const pageImages = images[Object.keys(images).find(i => i === window.location.pathname.slice(1))];
 
+
 const mainURL = 'http://localhost:3000/';
 
 const LIMIT = 20;
@@ -25,6 +26,7 @@ class Catalogue extends React.Component {
 			fetchItems: [],
 			allItems: [],
 			typesOfProducts: [],
+			productsCheckboxes: [],
 			params: {
 				'sort': [],
 				'filter': "",
@@ -71,24 +73,24 @@ class Catalogue extends React.Component {
 		.then(data => {
 			console.log(data)
 			this.setState({
-				fetchItems: data.data.data[1],
-				itemsQuantity: +data.data.data[0][0].count,
-				typesOfProducts: data.data.data[2].map(i => { return {name: i['product_type'], checked: false}})
+				fetchItems: data.data.data[0],
+				itemsQuantity: +data.data.data[1][0].count,
+				typesOfProducts: data.data.data[2]
 			}) 
 		})
 		.catch(err => {throw new Error(err)})
 	}
 
 	handleCheckboxes(ev) {
-		let newTypesOfProducts = [...this.state.typesOfProducts],
+		let newTypesOfProducts = [...this.state.productsCheckboxes],
 		cur = newTypesOfProducts.find(i => ev.target.id === i.name);
 		cur.checked = ev.target.checked;
  
 		this.setState({
-			typesOfProducts: newTypesOfProducts
+			productsCheckboxes: newTypesOfProducts
 		});
 
-		let filters = this.state.typesOfProducts.filter(item => item.checked).map(i => i.name) + '';
+		let filters = this.state.productsCheckboxes.filter(item => item.checked).map(i => i.name) + '';
 		this.changeParams('filter', filters)
 		this.handleQuery();
 	}
@@ -112,7 +114,14 @@ class Catalogue extends React.Component {
 
 
 	componentDidMount() {
-		this.handleQuery()
+		this.handleQuery().then(_ => {
+			let newTypes = [...this.state.typesOfProducts].map(item => { 
+					return { name: item.product_type, checked: false}
+				})
+			this.setState({
+				productsCheckboxes: newTypes
+			});
+		});
 	}
 
 	clearAll() {
@@ -124,7 +133,7 @@ class Catalogue extends React.Component {
 	buyAll() {
 		if (this.state.productsInCart.length) {
 			let price = this.state.productsInCart.reduce((sum, cur) => {
-				return sum + parseFloat(cur.price.slice(1, ));
+				return sum + parseFloat(cur.price);
 			}, 0)
 
 
@@ -189,7 +198,7 @@ class Catalogue extends React.Component {
 							BRANDS:
 						</h1>
 						<ul className="catalogue-brand">
-							{this.state.typesOfProducts.map((type, ind) => {
+							{this.state.productsCheckboxes.map((type, ind) => {
 								return (
 									<li key={type + ind}>
 										<input type="checkbox" id={type.name} onChange={this.handleCheckboxes}/>
@@ -220,6 +229,7 @@ class Catalogue extends React.Component {
 						</div>
 						<ul className="catalogue-items">{
 								this.state.fetchItems.map((item, ind) => {
+									console.log(item)
 									return (
 									<li onClick={() => this.addToCart(item)} key={item.name + ind}>
 										<Item
