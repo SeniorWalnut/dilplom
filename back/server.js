@@ -35,7 +35,7 @@ function _filterItems(filterTypes) {
 }
 
 function _sortItems(sort) {
-	return `ORDER BY ${sort[0]}` + (sort[1] === 'Down' ? ' DESC' : ''); 
+	return `ORDER BY ${sort[0]}` + (sort[1] === 'Down' ? ' DESC' : ' ASC'); 
 }
 
 function _findItem(item) {
@@ -59,12 +59,13 @@ server.get('/decks|wheels', (req, res) => {
 
 	let curPage = req.query.cur_page;
 
-	console.log(`SELECT * FROM product ${reqToDb} LIMIT ${LIMIT} OFFSET ${(curPage - 1) * LIMIT}`)
+	console.log(`SELECT COUNT(*) FROM product ${reqToDb.replace(/ORDER BY .* DESC|ASC/g, '')}`)
 
 	Promise.all([
 		_getItems(`SELECT * FROM product ${reqToDb} LIMIT ${LIMIT} OFFSET ${(curPage - 1) * LIMIT}`),
-		_getItems(`SELECT COUNT(*) FROM product ${reqToDb}`),
-		_getItems(`SELECT DISTINCT product_type FROM product ${pageType}`)
+		_getItems(`SELECT COUNT(*) FROM product ${pageType}`),
+		_getItems(`SELECT DISTINCT product_type FROM product ${pageType}`),
+		_getItems(`SELECT DISTINCT page_type FROM product`)
 	]).then(data => {
 		res.send({
 			data: data

@@ -5,6 +5,7 @@ import Item from './Item';
 import Cart from './Cart';
 import MainButton from './MainButton';
 import Pagination from './Pagination';
+// import Tabs from './Tabs';
 
 import images from '../assets/skate-images/**/*.jpg';
 
@@ -14,7 +15,6 @@ const pageImages = images[Object.keys(images).find(i => i === window.location.pa
 const mainURL = 'http://localhost:3000/';
 
 const LIMIT = 20;
-console.log(pageImages);
 		// <h1>{window.location.pathname}</h1>
 class Catalogue extends React.Component {
 	constructor(props) {
@@ -40,7 +40,9 @@ class Catalogue extends React.Component {
 			page: {
 				activeInd: 1,
 				pagesNum: 1
-			}
+			},
+			typeOfTabs: [],
+			curActiveInd: 0
 		};
 
 		// Main
@@ -56,6 +58,8 @@ class Catalogue extends React.Component {
 		this.buyAll = this.buyAll.bind(this);
 		this.closeMessage = this.closeMessage.bind(this);
 		this.changeParams = this.changeParams.bind(this);
+		// this.changeByTabs = this.changeByTabs.bind(this);
+
 
 		// Some Types
 		this._typesOfSorts = [
@@ -71,11 +75,11 @@ class Catalogue extends React.Component {
 			params: this.state.params
 		})
 		.then(data => {
-			console.log(data)
 			this.setState({
 				fetchItems: data.data.data[0],
 				itemsQuantity: +data.data.data[1][0].count,
-				typesOfProducts: data.data.data[2]
+				typesOfProducts: data.data.data[2],
+				typeOfTabs: data.data.data[3]
 			}) 
 		})
 		.catch(err => {throw new Error(err)})
@@ -111,6 +115,11 @@ class Catalogue extends React.Component {
 			]
 		}))
 	}
+
+	// changeByTabs(val) {
+	// 	this.setState({ curActiveInd: val })
+
+	// }
 
 
 	componentDidMount() {
@@ -181,6 +190,9 @@ class Catalogue extends React.Component {
 	}
 
 
+					// <Tabs
+					// 	tabs={this.state.typeOfTabs.map(item => item.page_type)}
+					// />
 	render() {
 		return (
 			<div className="catalogue">
@@ -229,7 +241,6 @@ class Catalogue extends React.Component {
 						</div>
 						<ul className="catalogue-items">{
 								this.state.fetchItems.map((item, ind) => {
-									console.log(item)
 									return (
 									<li onClick={() => this.addToCart(item)} key={item.name + ind}>
 										<Item

@@ -1,0 +1,17 @@
+.tabs
+	display: flex
+	&__tab
+		text-transform: uppercase
+		cursor: pointer
+		&:after 
+			display: block
+			content: ''
+			border-bottom: 2px solid $spanColor
+			transform: scaleX(0)
+			transition: 250ms ease
+			margin-top: 5px
+		&:first-child
+			margin-right: 20px
+		&:hover:after,
+		&.active:after
+			transform: scaleX(1)
