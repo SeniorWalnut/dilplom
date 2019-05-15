@@ -63,7 +63,7 @@ server.get('/decks|wheels', (req, res) => {
 
 	Promise.all([
 		_getItems(`SELECT * FROM product ${reqToDb} LIMIT ${LIMIT} OFFSET ${(curPage - 1) * LIMIT}`),
-		_getItems(`SELECT COUNT(*) FROM product ${pageType}`),
+		_getItems(`SELECT COUNT(*) FROM product ${reqToDb}`),
 		_getItems(`SELECT DISTINCT product_type FROM product ${pageType}`),
 		_getItems(`SELECT DISTINCT page_type FROM product`)
 	]).then(data => {
