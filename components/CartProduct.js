@@ -3,10 +3,9 @@ import MainButton from './MainButton';
 
 import images from '../assets/skate-images/**/*.jpg';
 
-const pageImages = images[Object.keys(images).find(i => i === window.location.pathname.slice(1))];
-
 const CartProduct = (props) => {
 	let item = props.obj;
+	const pageImages = images[Object.keys(images).find(i => i === window.location.pathname.slice(1))];
 	return (
 
 		<div className="cart-product">

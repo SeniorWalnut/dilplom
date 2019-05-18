@@ -5,11 +5,13 @@ import Item from './Item';
 import Cart from './Cart';
 import MainButton from './MainButton';
 import Pagination from './Pagination';
-// import Tabs from './Tabs';
+import Tabs from './Tabs';
+
+import { Link } from 'react-router-dom';
 
 import images from '../assets/skate-images/**/*.jpg';
 
-const pageImages = images[Object.keys(images).find(i => i === window.location.pathname.slice(1))];
+// const pageImages = images[Object.keys(images).find(i => i === window.location.pathname.slice(1))];
 
 
 const mainURL = 'http://localhost:3000/';
@@ -190,14 +192,16 @@ class Catalogue extends React.Component {
 	}
 
 
-					// <Tabs
-					// 	tabs={this.state.typeOfTabs.map(item => item.page_type)}
-					// />
 	render() {
+		const pageImages = images[Object.keys(images).find(i => i === window.location.pathname.slice(1))];
+
 		return (
 			<div className="catalogue">
 				<div className="catalogue-header">
-					<a href="#" className="catalogue-title">JSk</a>
+					<Link to="/" className="catalogue-title">JSk</Link>
+					<Tabs
+						tabs={this.state.typeOfTabs.map(item => item.page_type)}
+					/>
 					<Cart 
 						products={[...new Set(this.state.productsInCart)]}
 						clearAll={this.clearAll}

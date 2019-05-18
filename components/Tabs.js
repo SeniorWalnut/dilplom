@@ -1,6 +1,6 @@
 import React from 'react';
 import Catalogue from './Catalogue'
-import { withRouter, Switch, Route, Link } from "react-router-dom";
+import { Link } from "react-router-dom";
 
 class Tabs extends React.Component {
 	constructor(props) {
@@ -24,7 +24,7 @@ class Tabs extends React.Component {
 					<Link 
 						to={'/' + this.props.tabs[ind]}
 						key={tab + ind}
-						className={"tabs__tab " + (ind === this.state.activeTab ? "active" : '')}
+						className={"tabs__tab " + (window.location.pathname.slice(1) === tab ? "active" : '')}
 						onClick={() => this.changeTab(ind)}
 						>
 					{tab}
@@ -36,4 +36,4 @@ class Tabs extends React.Component {
 	}
 }
 
-export default withRouter(Tabs);
+export default Tabs;
