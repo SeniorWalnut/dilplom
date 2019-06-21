@@ -59,11 +59,11 @@ server.get('/decks|wheels', (req, res) => {
 
 	let curPage = req.query.cur_page;
 
-	console.log(`SELECT COUNT(*) FROM product ${reqToDb.replace(/ORDER BY .* DESC|ASC/g, '')}`)
+	console.log(`SELECT COUNT(*) FROM product ${reqToDb.replace(/(ORDER BY .*)|(LIMIT .* OFFSET .*)/g, '')}`)
 
 	Promise.all([
 		_getItems(`SELECT * FROM product ${reqToDb} LIMIT ${LIMIT} OFFSET ${(curPage - 1) * LIMIT}`),
-		_getItems(`SELECT COUNT(*) FROM product ${reqToDb}`),
+		_getItems(`SELECT COUNT(*) FROM product ${reqToDb.replace(/(ORDER BY .*)|(LIMIT .* OFFSET .*)/g, '')}`),
 		_getItems(`SELECT DISTINCT product_type FROM product ${pageType}`),
 		_getItems(`SELECT DISTINCT page_type FROM product`)
 	]).then(data => {
@@ -74,5 +74,5 @@ server.get('/decks|wheels', (req, res) => {
 });
 
 
-server.listen(3000);
+server.listen(4000);
 console.log('server is running');
